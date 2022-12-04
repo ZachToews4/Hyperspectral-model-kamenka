@@ -190,6 +190,7 @@ for elm in ['Ca', 'Al', 'Si', 'HLD']:
 
 
 dfExport = pd.DataFrame()
+dfExport['Depth'] = X_HSI['Depth']
 for elm in ['Ca', 'Al', 'Si', 'HLD']:
     dfExport[elm + '_pred'] = Y_pred_HSI[elm]
 
