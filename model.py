@@ -73,7 +73,7 @@ for elm in Y.columns:
     dfExport[elm] = Y[elm]
     dfExport[elm + '_pred'] = Y_pred[elm]
 
-dfExport.to_csv("LinReg-training.csv")
+dfExport.to_csv("model_outputs/LinReg-training.csv")
 
 
 # LINEAR REGRESSION PREDICTION ONLY
@@ -95,7 +95,7 @@ dfExport = pd.DataFrame()
 for elm in Y.columns:
     dfExport[elm + '_pred'] = Y_pred_HSI[elm]
 
-dfExport.to_csv("LinReg-prediction-only.csv")
+dfExport.to_csv("model_outputs/LinReg-prediction-only.csv")
 
 
 # TRAIN TEST SPLIT
@@ -155,3 +155,42 @@ while i < 100:
     r2 = r2 + r2_score(Y_test[element_temp], rfr.predict(x_test))
     i = i + 1
 print(element_temp, r2/i)
+
+
+# RANDOM FOREST TEST PREDICTION
+Y_pred = pd.DataFrame()
+x_train, x_test, Y_train, Y_test = train_test_split(X,Y, test_size=0.2)
+for elm in ['Ca', 'Al', 'Si', 'HLD']:
+    rfr = RandomForestRegressor(bootstrap=True, max_depth=80, max_features='sqrt', min_samples_leaf=1, min_samples_split=10, n_estimators=500).fit(x_train, Y_train[elm])
+    Y_pred[elm] = rfr.predict(x_test)
+    print(elm, r2_score(Y_test[elm], Y_pred[elm]))
+
+dfExport = pd.DataFrame()
+for elm in ['Ca', 'Al', 'Si', 'HLD']:
+    dfExport[elm + '_pred'] = Y_pred[elm]
+    dfExport[elm] = Y_test[elm].reset_index().drop(columns='index')
+    
+dfExport.to_csv("model_outputs/RanFor-prediction-only.csv")
+
+
+# RANDOM FOREST HSI PREDICTION
+file_path_HSI = "input_data/cleaned_hsi_only.csv"
+file_HSI = os.path.join(os.getcwd(), file_path_HSI) 
+df_HSI = pd.read_csv(file_HSI)
+X_HSI = df_HSI
+for col in X_HSI.columns:
+    if col[:4] != 'LWIR' and col[:4] != 'SWIR' and col != 'Depth':
+        X_HSI = X_HSI.drop(columns=col)
+
+Y_pred_HSI = pd.DataFrame()
+for elm in ['Ca', 'Al', 'Si', 'HLD']:
+    #lin_reg = LinearRegression()
+    rfr = RandomForestRegressor(bootstrap=True, max_depth=80, max_features='sqrt', min_samples_leaf=1, min_samples_split=10, n_estimators=500).fit(X, Y[elm])
+    Y_pred_HSI[elm] = rfr.predict(X_HSI)
+
+
+dfExport = pd.DataFrame()
+for elm in ['Ca', 'Al', 'Si', 'HLD']:
+    dfExport[elm + '_pred'] = Y_pred_HSI[elm]
+
+dfExport.to_csv("model_outputs/RanFor-HSI-prediction-only.csv")
