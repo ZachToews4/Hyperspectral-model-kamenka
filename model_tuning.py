@@ -35,11 +35,6 @@ x_train, x_test, Y_train, Y_test = train_test_split(X,Y, test_size=0.2)
 print('Number of training data = ' + str(len(x_train)) + ' and number of testing data = ' + str(len(x_test)))
 print('Total number of data = ' + str(len(df.iloc[:,[0]])))
 
-#x_train.sort_values(by=['Depth'], inplace=True)
-#Y_train.sort_values(by=['Depth'], inplace=True)
-#x_test.sort_values(by=['Depth'], inplace=True)
-#Y_test.sort_values(by=['Depth'], inplace=True)
-
 # Number of trees in random forest
 n_estimators = [int(x) for x in np.linspace(start = 200, stop = 2000, num = 10)]
 # Number of features to consider at every split
@@ -95,17 +90,7 @@ rf_random.best_params_
 
 from sklearn.model_selection import GridSearchCV
 # Create the parameter grid based on the results of random search 
-#Al
-param_grid = {
-    'bootstrap': [False],
-    'max_depth': [8,10,12],
-    'max_features': ['sqrt'],
-    'min_samples_leaf': [1, 2, 3],
-    'min_samples_split': [8, 10, 12],
-    'n_estimators': [1500, 2000, 2500]
-}
-#Ca
-'''
+
 param_grid = {
     'bootstrap': [True],
     'max_depth': [80, 90, 100, 110],
@@ -114,7 +99,7 @@ param_grid = {
     'min_samples_split': [8, 10, 12],
     'n_estimators': [100, 500, 1000, 1600, 2000]
 }
-'''
+
 # Create a based model
 rf = RandomForestRegressor()
 # Instantiate the grid search model
@@ -130,20 +115,3 @@ grid_accuracy = evaluate(best_grid, x_test, Y_test[element_temp])
 
 print('Improvement of {:0.2f}%.'.format( 100 * (grid_accuracy - base_accuracy) / base_accuracy))
 grid_search.best_params_
-
-
-
-'''
-estimators = 90
-while estimators<111:
-    for element_temp in ['Al', 'Ca', 'Si']:
-        i = 0
-        r2 = 0
-        while i < 25:
-            x_train, x_test, Y_train, Y_test = train_test_split(X,Y, test_size=0.2)
-            rfr = RandomForestRegressor(n_estimators=100).fit(x_train, Y_train[element_temp])
-            r2 = r2 + r2_score(Y_test[element_temp], rfr.predict(x_test))
-            i = i + 1
-        print(element_temp, estimators, r2/i)
-    estimators = estimators + 1
-'''
